@@ -1,0 +1,23 @@
+{
+  "name": "ss-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that captures screenshots of Windows desktop application windows for visual feedback.",
+  "type": "module",
+  "bin": {
+    "ss-mcp": "./src/server.mjs"
+  },
+  "scripts": {
+    "start": "node ./src/server.mjs",
+    "smoke": "node ./scripts/smoke-test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "screenshot",
+    "windows",
+    "visual-feedback"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
