@@ -33,7 +33,7 @@ Point your MCP client at the server entrypoint:
 ```json
 {
   "mcpServers": {
-    "ss": {
+    "window_screenshot": {
       "command": "node",
       "args": [
         "C:\\path\\to\\ss-mcp\\src\\server.mjs"
