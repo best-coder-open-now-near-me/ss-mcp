@@ -43,6 +43,15 @@ Point your MCP client at the server entrypoint:
 }
 ```
 
+For Codex Desktop, prefer using Codex's config writer instead of hand-editing TOML:
+
+```powershell
+$env:CODEX_HOME = "C:\Users\mewhi\.codex"
+codex mcp add window_screenshot -- "C:\path\to\node.exe" "C:\path\to\ss-mcp\src\server.mjs"
+```
+
+If `node` is not on PATH, use the full path to the Node executable that Codex can launch.
+
 ## Tool Examples
 
 List windows:

@@ -136,7 +136,8 @@ process.stdin.on("end", () => {
 
 function readFrames() {
   while (true) {
-    const headerEnd = inputBuffer.indexOf("\r\n\r\n");
+    const separator = findHeaderSeparator(inputBuffer);
+    const headerEnd = separator.index;
     if (headerEnd === -1) {
       return;
     }
@@ -149,7 +150,7 @@ function readFrames() {
     }
 
     const contentLength = Number(match[1]);
-    const frameStart = headerEnd + 4;
+    const frameStart = headerEnd + separator.length;
     const frameEnd = frameStart + contentLength;
     if (inputBuffer.length < frameEnd) {
       return;
@@ -159,6 +160,19 @@ function readFrames() {
     inputBuffer = inputBuffer.subarray(frameEnd);
     void handleRawMessage(body);
   }
+}
+
+function findHeaderSeparator(buffer) {
+  const crlf = buffer.indexOf("\r\n\r\n");
+  const lf = buffer.indexOf("\n\n");
+  if (crlf === -1) {
+    return { index: lf, length: 2 };
+  }
+  if (lf === -1 || crlf < lf) {
+    return { index: crlf, length: 4 };
+  }
+
+  return { index: lf, length: 2 };
 }
 
 async function handleRawMessage(body) {
@@ -184,7 +198,7 @@ async function handleMessage(message) {
     return;
   }
 
-  if (!Object.hasOwn(message, "id")) {
+  if (!Object.prototype.hasOwnProperty.call(message, "id")) {
     return;
   }
 

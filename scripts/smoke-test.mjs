@@ -13,6 +13,7 @@ const child = spawn(process.execPath, [serverPath], {
   windowsHide: true
 });
 
+const frameSeparator = process.env.SS_MCP_SMOKE_LF_ONLY === "1" ? "\n\n" : "\r\n\r\n";
 let buffer = Buffer.alloc(0);
 let nextId = 1;
 const pending = new Map();
@@ -73,7 +74,7 @@ function request(method, params = {}) {
   };
   const json = JSON.stringify(message);
   const bytes = Buffer.byteLength(json, "utf8");
-  child.stdin.write(`Content-Length: ${bytes}\r\n\r\n${json}`);
+  child.stdin.write(`Content-Length: ${bytes}${frameSeparator}${json}`);
 
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -114,5 +115,15 @@ for (const expected of ["list_windows", "screenshot_window", "screenshot_active_
   }
 }
 
+const listResult = await request("tools/call", {
+  name: "list_windows",
+  arguments: {}
+});
+const listText = listResult.content?.find((item) => item.type === "text")?.text;
+const listedWindows = JSON.parse(listText);
+if (!Array.isArray(listedWindows.windows)) {
+  throw new Error("list_windows did not return a windows array.");
+}
+
 child.stdin.end();
-console.log(`Smoke test passed. Tools: ${[...toolNames].join(", ")}`);
+console.log(`Smoke test passed. Tools: ${[...toolNames].join(", ")}. Windows visible: ${listedWindows.windows.length}`);
